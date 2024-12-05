@@ -12,6 +12,8 @@ class User(db.Model):
     # Field to track failed login attempts
     # But we will not use it, creating a vulnerability
     login_attempts = db.Column(db.Integer, default=0)
+    # simple token without expiration date
+    reset_token = db.Column(db.String(100))
 
     def __repr__(self):
         return f'<User {self.username}>'

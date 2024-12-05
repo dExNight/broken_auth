@@ -1,3 +1,5 @@
+import random
+import string
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from app.models import User
@@ -69,3 +71,50 @@ class AuthController:
             "password": user.password,
             "created_at": user.created_at.isoformat()
         }), 200
+        
+        
+    @staticmethod
+    def request_password_reset():
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({"error": "Email is required"}), 400
+
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            return jsonify({"error": "Email not found"}), 404
+
+        # No brute force protection
+        reset_token = ''.join(random.choices(string.digits, k=6))
+        
+        user.reset_token = reset_token
+        db.session.commit()
+
+        # Return token not in email, but in response )
+        return jsonify({
+            "message": "Reset token generated",
+            "token": reset_token,
+            "email": email
+        }), 200
+
+    @staticmethod
+    def reset_password():
+        data = request.get_json()
+        email = data.get('email')
+        token = data.get('token')
+        new_password = data.get('new_password')
+
+        if not all([email, token, new_password]):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and user.reset_token == token:
+            user.password = new_password
+            user.reset_token = None
+            db.session.commit()
+            return jsonify({"message": "Password has been reset"}), 200
+
+        return jsonify({"error": "Invalid token"}), 400
