@@ -7,6 +7,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     # Vulnerability: store pure password
     password = db.Column(db.String(200), nullable=False)
+    bio = db.Column(db.Text)  # for unverified HTML
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
     # Field to track failed login attempts

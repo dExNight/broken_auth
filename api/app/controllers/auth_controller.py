@@ -18,11 +18,10 @@ class AuthController:
         if User.query.filter_by(email=data['email']).first():
             return jsonify({"error": "Email already exists"}), 409
 
-        # Уязвимость: сохраняем пароль в открытом виде
         user = User(
             username=data['username'],
             email=data['email'],
-            password=data['password']  # Больше не хешируем пароль
+            password=data['password']
         )
         
         try:
@@ -42,9 +41,7 @@ class AuthController:
         
         user = User.query.filter_by(username=data['username']).first()
         
-        # Уязвимость: простое сравнение паролей в открытом виде
         if user and user.password == data['password']:
-            # Уязвимость: не обновляем и не проверяем количество попыток входа
             access_token = create_access_token(identity=str(user.id))
             return jsonify({
                 "access_token": access_token,
@@ -52,7 +49,6 @@ class AuthController:
                 "username": user.username
             }), 200
             
-        # Уязвимость: возвращаем одинаковое сообщение об ошибке
         return jsonify({"error": "Invalid credentials"}), 401
 
     @staticmethod
@@ -69,9 +65,10 @@ class AuthController:
             "username": user.username,
             "email": user.email,
             "password": user.password,
+            "bio": user.bio,
             "created_at": user.created_at.isoformat()
         }), 200
-        
+            
         
     @staticmethod
     def request_password_reset():
@@ -118,3 +115,30 @@ class AuthController:
             return jsonify({"message": "Password has been reset"}), 200
 
         return jsonify({"error": "Invalid token"}), 400
+    
+    @staticmethod
+    @jwt_required()
+    def update_profile():
+        current_user_id = int(get_jwt_identity())
+        user = User.query.get(current_user_id)
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        data = request.get_json()
+        
+        if 'bio' in data:
+            user.bio = data['bio']
+        
+        try:
+            db.session.commit()
+            return jsonify({
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "bio": user.bio,
+                "created_at": user.created_at.isoformat()
+            }), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": "Could not update profile"}), 500

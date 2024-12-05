@@ -23,6 +23,10 @@ def request_reset():
 def confirm_reset():
     return AuthController.reset_password()
 
+@bp.route('/profile', methods=['PUT'])
+def update_profile():
+    return AuthController.update_profile()
+
 @bp.route('/test')
 def test():
     return {'message': 'Auth routes working!'}
