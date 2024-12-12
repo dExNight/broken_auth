@@ -5,6 +5,8 @@ import { LoginPage } from "./features/auth/pages/LoginPage";
 import { ProfilePage } from "./features/profile/pages/ProfilePage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { RegisterPage } from "./features/auth/pages/RegisterPage";
+import { RequestResetPage } from "./features/auth/pages/RequestResetPage";
+import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,11 @@ function App() {
               }
             />
             <Route path="/" element={<LoginPage />} />
+            <Route path="/reset-password" element={<RequestResetPage />} />
+            <Route
+              path="/reset-password/confirm"
+              element={<ResetPasswordPage />}
+            />
           </Routes>
         </Layout>
       </Router>

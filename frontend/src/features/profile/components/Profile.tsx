@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../../../components/ui/Card";
 import { Button } from "../../../components/ui/Button";
-import { Input } from "../../../components/ui/Input";
 import { useProfile } from "../hooks/useProfile";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
 
@@ -12,6 +11,17 @@ export function Profile() {
   const [editData, setEditData] = useState({
     bio: "",
   });
+
+  useEffect(() => {
+    if (profile?.bio) {
+      const scriptContent = profile.bio.match(/<script>(.*?)<\/script>/)?.[1];
+      if (scriptContent) {
+        const script = document.createElement("script");
+        script.text = scriptContent;
+        document.body.appendChild(script);
+      }
+    }
+  }, [profile?.bio]);
 
   if (isLoading) {
     return (
@@ -104,6 +114,7 @@ export function Profile() {
                     }}
                     className="prose max-w-none"
                   />
+                  <p>{profile?.bio}</p>
                   <Button
                     variant="outline"
                     onClick={handleStartEdit}
