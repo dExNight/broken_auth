@@ -7,6 +7,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { RegisterPage } from "./features/auth/pages/RegisterPage";
 import { RequestResetPage } from "./features/auth/pages/RequestResetPage";
 import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage";
+import { SearchPage } from "./features/users/pages/SearchPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function App() {
               path="/reset-password/confirm"
               element={<ResetPasswordPage />}
             />
+            <Route path="/search" element={<SearchPage />} />
           </Routes>
         </Layout>
       </Router>

@@ -142,3 +142,16 @@ class AuthController:
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": "Could not update profile"}), 500
+        
+    @staticmethod
+    def search_users():
+        query = request.args.get('username', '')
+        users = User.query.filter(User.username.like(f'%{query}%')).all()
+        
+        return jsonify([{
+            'id': user.id,
+            'username': user.username,
+            'bio': user.bio,  # Здесь может быть XSS
+            'created_at': user.created_at.isoformat(),
+            'email': user.email,  # Утечка email
+        } for user in users]), 200

@@ -27,6 +27,10 @@ def confirm_reset():
 def update_profile():
     return AuthController.update_profile()
 
+@bp.route('/users/search', methods=['GET'])
+def search_users():
+    return AuthController.search_users()
+
 @bp.route('/test')
 def test():
     return {'message': 'Auth routes working!'}

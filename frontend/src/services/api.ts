@@ -62,6 +62,13 @@ export const authApi = {
     const response = await api.post("/auth/reset-password/confirm", data);
     return response.data;
   },
+
+  searchUsers: async (query: string) => {
+    const response = await api.get<User[]>(
+      `/auth/users/search?username=${query}`
+    );
+    return response.data;
+  },
 };
 
 export default api;
